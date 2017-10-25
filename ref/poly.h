@@ -24,5 +24,6 @@ void poly_invntt(poly *r);
   
 void poly_add(poly *r, const poly *a, const poly *b);
 void poly_sub(poly *r, const poly *a, const poly *b);
+void poly_round(poly *r, const poly *a);
 
 #endif

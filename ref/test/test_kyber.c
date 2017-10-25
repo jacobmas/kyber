@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define NTESTS 100000
-
+#define NTESTS 100
 
 int test_keys()
 {
@@ -19,16 +18,16 @@ int test_keys()
   for(i=0; i<NTESTS; i++)
   {
     //Alice generates a public key
-    crypto_kem_keypair(pk, sk_a);
+    crypto_kem_keypair_pm(pk, sk_a);
 
     //Bob derives a secret key and creates a response
-    crypto_kem_enc(sendb, key_b, pk);
+    crypto_kem_enc_pm(sendb, key_b, pk);
   
     //Alice uses Bobs response to get her secret key
-    crypto_kem_dec(key_a, sendb, sk_a);
+    crypto_kem_dec_pm(key_a, sendb, sk_a);
 
     if(memcmp(key_a, key_b, KYBER_SHAREDKEYBYTES))
-      printf("ERROR keys\n");
+      printf("i=%d, ERROR keys\n",i);
   }
 
   return 0;
@@ -48,16 +47,16 @@ int test_invalid_sk_a()
   for(i=0; i<NTESTS; i++)
   {
     //Alice generates a public key
-    crypto_kem_keypair(pk, sk_a);
+    crypto_kem_keypair_pm(pk, sk_a);
 
     //Bob derives a secret key and creates a response
-    crypto_kem_enc(sendb, key_b, pk);
+    crypto_kem_enc_pm(sendb, key_b, pk);
 
     //Replace secret key with random values
     fread(sk_a, KYBER_SECRETKEYBYTES, 1, urandom); 
   
     //Alice uses Bobs response to get her secre key
-    crypto_kem_dec(key_a, sendb, sk_a);
+    crypto_kem_dec_pm(key_a, sendb, sk_a);
     
     if(!memcmp(key_a, key_b, KYBER_SHAREDKEYBYTES))
       printf("ERROR invalid sk_a\n");
@@ -85,16 +84,16 @@ int test_invalid_ciphertext()
     fread(&pos, sizeof(int), 1, urandom);
 
     //Alice generates a public key
-    crypto_kem_keypair(pk, sk_a);
+    crypto_kem_keypair_pm(pk, sk_a);
 
     //Bob derives a secret key and creates a response
-    crypto_kem_enc(sendb, key_b, pk);
+    crypto_kem_enc_pm(sendb, key_b, pk);
 
     //Change some byte in the ciphertext (i.e., encapsulated key)
     sendb[pos % KYBER_BYTES] ^= 23;
   
     //Alice uses Bobs response to get her secre key
-    crypto_kem_dec(key_a, sendb, sk_a);
+    crypto_kem_dec_pm(key_a, sendb, sk_a);
 
     if(!memcmp(key_a, key_b, KYBER_SHAREDKEYBYTES))
       printf("ERROR invalid ciphertext\n");

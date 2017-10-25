@@ -6,6 +6,8 @@
 #define KYBER_K 4 /* used in sampler */
 #define KYBER_Q 7681
 
+#define KYBER_P_MASK 0xFFF0 /* Set to be 0 mod p */
+
 #define KYBER_SEEDBYTES       32
 #define KYBER_NOISESEEDBYTES  32
 #define KYBER_COINBYTES       32

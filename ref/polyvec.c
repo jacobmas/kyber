@@ -224,3 +224,10 @@ void polyvec_add(polyvec *r, const polyvec *a, const polyvec *b)
     poly_add(&r->vec[i], &a->vec[i], &b->vec[i]);
 
 }
+void polyvec_round(polyvec *r, const polyvec *a)
+{
+  int i;
+  for(i=0;i<KYBER_D;i++)
+    poly_round(&r->vec[i], &a->vec[i]);
+
+}

@@ -114,6 +114,13 @@ void poly_add(poly *r, const poly *a, const poly *b)
     r->coeffs[i] = barrett_reduce(a->coeffs[i] + b->coeffs[i]);
 }
 
+void poly_round(poly *r, const poly *a)
+{
+  int i;
+  for(i=0; i<KYBER_N;i++)
+    r->coeffs[i] = barrett_reduce((a->coeffs[i] & KYBER_P_MASK));
+}
+
 void poly_sub(poly *r, const poly *a, const poly *b)
 {
   int i;

@@ -122,63 +122,83 @@ int main()
     crypto_kem_dec(key_a, sendb+i*KYBER_BYTES, sk_a);
   }
   print_results("kyber_decaps:  ", t, NTESTS);
+
+   for(i=0; i<NTESTS; i++)
+  {
+    t[i] = cpucycles();
+    crypto_kem_keypair_pm(senda+i*KYBER_PUBLICKEYBYTES, sk_a);
+  }
+  print_results("kyber_keypair_pm: ", t, NTESTS);
+
+  for(i=0; i<NTESTS; i++)
+  {
+    t[i] = cpucycles();
+    crypto_kem_enc_pm(key_b, sendb+i*KYBER_BYTES, senda+i*KYBER_PUBLICKEYBYTES);
+  }
+  print_results("kyber_encaps_pm:  ", t, NTESTS);
+
+  for(i=0; i<NTESTS; i++)
+  {
+    t[i] = cpucycles();
+    crypto_kem_dec_pm(key_a, sendb+i*KYBER_BYTES, sk_a);
+  }
+  print_results("kyber_decaps_pm:  ", t, NTESTS);
+  
+  /* /\* Generating static keys for AKE *\/ */
+  /* crypto_kem_keypair(pk_a, sk_a); // Generate static key for Alice */
+  /* crypto_kem_keypair(pk_b, sk_b); // Generate static key for Bob */
+
+
+
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_uake_initA(kexsenda+i*KYBER_AKE_SENDABYTES, tk, eska, pk_b); // Run by Alice */
+  /* } */
+  /* print_results("kyber_uake_initA: ", t, NTESTS); */
+
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_uake_sharedB(kexsendb+i*KYBER_AKE_SENDBBYTES, key_b, kexsenda+i*KYBER_AKE_SENDABYTES, sk_b); // Run by Bob */
+  /* } */
+  /* print_results("kyber_uake_sharedB:  ", t, NTESTS); */
+
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_uake_sharedA(key_a, kexsendb+i*KYBER_AKE_SENDBBYTES, tk, eska); // Run by Alice */
+  /* } */
+  /* print_results("kyber_uake_sharedA:  ", t, NTESTS); */
  
   
-  /* Generating static keys for AKE */
-  crypto_kem_keypair(pk_a, sk_a); // Generate static key for Alice
-  crypto_kem_keypair(pk_b, sk_b); // Generate static key for Bob
 
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_ake_initA(kexsenda+i*KYBER_AKE_SENDABYTES, tk, eska, pk_b); // Run by Alice */
+  /* } */
+  /* print_results("kyber_ake_initA: ", t, NTESTS); */
 
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_ake_sharedB(kexsendb+i*KYBER_AKE_SENDBBYTES, key_b, kexsenda+i*KYBER_AKE_SENDABYTES, sk_b, pk_a); // Run by Bob */
+  /* } */
+  /* print_results("kyber_ake_sharedB:  ", t, NTESTS); */
 
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_uake_initA(kexsenda+i*KYBER_AKE_SENDABYTES, tk, eska, pk_b); // Run by Alice
-  }
-  print_results("kyber_uake_initA: ", t, NTESTS);
-
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_uake_sharedB(kexsendb+i*KYBER_AKE_SENDBBYTES, key_b, kexsenda+i*KYBER_AKE_SENDABYTES, sk_b); // Run by Bob
-  }
-  print_results("kyber_uake_sharedB:  ", t, NTESTS);
-
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_uake_sharedA(key_a, kexsendb+i*KYBER_AKE_SENDBBYTES, tk, eska); // Run by Alice
-  }
-  print_results("kyber_uake_sharedA:  ", t, NTESTS);
- 
-  
-
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_ake_initA(kexsenda+i*KYBER_AKE_SENDABYTES, tk, eska, pk_b); // Run by Alice
-  }
-  print_results("kyber_ake_initA: ", t, NTESTS);
-
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_ake_sharedB(kexsendb+i*KYBER_AKE_SENDBBYTES, key_b, kexsenda+i*KYBER_AKE_SENDABYTES, sk_b, pk_a); // Run by Bob
-  }
-  print_results("kyber_ake_sharedB:  ", t, NTESTS);
-
-  for(i=0; i<NTESTS; i++)
-  {
-    t[i] = cpucycles();
-    kyber_ake_sharedA(key_a, kexsendb+i*KYBER_AKE_SENDBBYTES, tk, eska, sk_a); // Run by Alice
-  }
-  print_results("kyber_ake_sharedA:  ", t, NTESTS);
+  /* for(i=0; i<NTESTS; i++) */
+  /* { */
+  /*   t[i] = cpucycles(); */
+  /*   kyber_ake_sharedA(key_a, kexsendb+i*KYBER_AKE_SENDBBYTES, tk, eska, sk_a); // Run by Alice */
+  /* } */
+  /* print_results("kyber_ake_sharedA:  ", t, NTESTS); */
  
   // Cleaning
   free(senda);
   free(sendb);
-  free(kexsenda);
-  free(kexsendb);
+  /* free(kexsenda); */
+  /* free(kexsendb); */
   
   return 0;
 }

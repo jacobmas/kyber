@@ -4,6 +4,9 @@
 void indcpa_keypair(unsigned char *pk, 
                    unsigned char *sk);
 
+void indcpa_keypair_pm(unsigned char *pk, 
+                   unsigned char *sk);
+
 void indcpa_enc(unsigned char *c,
                const unsigned char *m,
                const unsigned char *pk,
@@ -12,5 +15,10 @@ void indcpa_enc(unsigned char *c,
 void indcpa_dec(unsigned char *m,
                const unsigned char *c,
                const unsigned char *sk);
+
+void indcpa_enc_pm(unsigned char *c,
+               const unsigned char *m,
+               const unsigned char *pk,
+               const unsigned char *coins);
 
 #endif

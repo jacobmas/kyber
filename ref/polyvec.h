@@ -21,4 +21,6 @@ void polyvec_pointwise_acc(poly *r, const polyvec *a, const polyvec *b);
 
 void polyvec_add(polyvec *r, const polyvec *a, const polyvec *b);
 
+void polyvec_round(polyvec *r, const polyvec *a);
+
 #endif

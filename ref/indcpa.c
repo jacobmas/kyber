@@ -129,6 +129,40 @@ void indcpa_keypair(unsigned char *pk,
   pack_pk(pk, &pkpv, seed);
 }
 
+void indcpa_keypair_pm(unsigned char *pk, 
+                   unsigned char *sk)
+{
+  polyvec a[KYBER_D], e, pkpv, skpv;
+  unsigned char seed[KYBER_SEEDBYTES];
+  unsigned char noiseseed[KYBER_COINBYTES];
+  int i;
+  unsigned char nonce=0;
+
+  randombytes(seed, KYBER_SEEDBYTES);
+  shake128(seed, KYBER_SEEDBYTES, seed, KYBER_SEEDBYTES); /* Don't send output of system RNG */
+  randombytes(noiseseed, KYBER_COINBYTES);
+
+  gen_a(a, seed);
+
+  for(i=0;i<KYBER_D;i++)
+    poly_getnoise(skpv.vec+i,noiseseed,nonce++);
+
+  polyvec_ntt(&skpv);
+  
+  /*for(i=0;i<KYBER_D;i++)
+    poly_getnoise(e.vec+i,noiseseed,nonce++);*/
+
+  // matrix-vector multiplication
+  for(i=0;i<KYBER_D;i++)
+    polyvec_pointwise_acc(&pkpv.vec[i],&skpv,a+i);
+
+  polyvec_invntt(&pkpv);
+  //  polyvec_add(&pkpv,&pkpv,&e);
+  // polyvec_round(&pkpv,&pkpv);
+  pack_sk(sk, &skpv);
+  pack_pk(pk, &pkpv, seed);
+}
+
 
 void indcpa_enc(unsigned char *c,
                const unsigned char *m,
@@ -144,7 +178,7 @@ void indcpa_enc(unsigned char *c,
 
   unpack_pk(&pkpv, seed, pk);
 
-  poly_frommsg(&k, m);
+  poly_frommsg(&k, m);  // k is a poly rep of message
 
   for(i=0;i<KYBER_D;i++)
     bitrev_vector(pkpv.vec[i].coeffs);
@@ -175,6 +209,55 @@ void indcpa_enc(unsigned char *c,
   poly_add(&v, &v, &epp);
   poly_add(&v, &v, &k);
 
+  pack_ciphertext(c, &bp, &v);
+}
+
+void indcpa_enc_pm(unsigned char *c,
+               const unsigned char *m,
+               const unsigned char *pk,
+               const unsigned char *coins)
+{
+  polyvec sp, pkpv, ep, at[KYBER_D], bp;
+  poly v, k, epp;
+  unsigned char seed[KYBER_SEEDBYTES];
+  int i;
+  unsigned char nonce=0;
+
+
+  unpack_pk(&pkpv, seed, pk);
+
+  poly_frommsg(&k, m);  // k is a poly rep of message
+
+  for(i=0;i<KYBER_D;i++)
+    bitrev_vector(pkpv.vec[i].coeffs);
+  polyvec_ntt(&pkpv);
+
+  gen_at(at, seed);
+
+  for(i=0;i<KYBER_D;i++)
+    poly_getnoise(sp.vec+i,coins,nonce++);
+
+  polyvec_ntt(&sp);
+
+  //for(i=0;i<KYBER_D;i++)
+  // poly_getnoise(ep.vec+i,coins,nonce++);
+
+  // matrix-vector multiplication
+  for(i=0;i<KYBER_D;i++)
+    polyvec_pointwise_acc(&bp.vec[i],&sp,at+i);
+
+  polyvec_invntt(&bp);
+  //polyvec_add(&bp, &bp, &ep);
+ 
+  polyvec_pointwise_acc(&v, &pkpv, &sp);
+  poly_invntt(&v);
+
+  //poly_getnoise(&epp,coins,nonce++);
+  //nonce++;
+
+  //poly_add(&v, &v, &epp);
+  poly_add(&v, &v, &k);
+  //poly_round(&v,&v);
   pack_ciphertext(c, &bp, &v);
 }
 
